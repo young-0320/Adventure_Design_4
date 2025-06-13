@@ -67,7 +67,7 @@ void setup() {
     Serial.println("DFPlayer 초기화 실패, 프로그램 중지.");
     while (true);
   }
-  dfplayer.volume(4);
+  dfplayer.volume(10);
   Serial.println("시스템 대기 중...");
 }
 

@@ -1,5 +1,3 @@
-# speech_to_text_rpi.py 
-
 import pyaudio
 from google.cloud import speech
 import re
@@ -10,7 +8,7 @@ import sys
 try:
     from text_to_speech_rpi import speak
 except ImportError:
-    print("[STT 치명적 오류] text_to_speech_rpi.py 파일을 찾을 수 없습니다.", file=sys.stderr)
+    print("text_to_speech_rpi.py 파일을 찾을 수 없습니다.", file=sys.stderr)
     def speak(text, **kwargs): pass
 
 KEY_FILE_PATH = "/home/pi/ultimate-result-459908-h8-a9fcaceeb565.json"
@@ -21,14 +19,11 @@ MAIN_RECORD_SECONDS, CONFIRM_RECORD_SECONDS = 3, 3
 kor2num = { '공': '0', '영': '0', '일': '1', '이': '2', '삼': '3', '사': '4', '오': '5', '육': '6', '칠': '7', '팔': '8', '구': '9' }
 kor_syllable_to_letter = { "에이": "A", "비": "B", "씨": "C", "디": "D", "이": "E", "에프": "F", "지": "G", "에이치": "H", "아이": "I", "제이": "J", "케이": "K", "엘": "L", "엠": "M", "엔": "N", "오": "O", "피": "P", "큐": "Q", "알": "R", "에스": "S", "티": "T", "유": "U", "브이": "V", "더블유": "W", "엑스": "X", "와이": "Y", "제트": "Z" }
 
-
 def log_and_speak(message, log_prefix="[STT 안내]"):
-
     print(f"{log_prefix} {message}")
     speak(message, speaker_keyword=USB_SPEAKER_KEYWORD)
 
 def add_bus_number(new_number, file_path):
-
     bus_set = set()
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -40,7 +35,6 @@ def add_bus_number(new_number, file_path):
         for bus in sorted(list(bus_set)):
             f.write(bus + '\n')
     print(f"  ▶ {file_path}에 {new_number} 추가/갱신 완료. 현재 목록: {sorted(list(bus_set))}")
-
 
 
 def get_microphone_device_index_stt(p_instance, keyword):
@@ -121,7 +115,7 @@ def listen_for_confirmation():
     if not audio_confirm: return None
     text_confirm = recognize_google_cloud(audio_confirm)
     if text_confirm:
-        print(f"STT: 확인 응답 인식 결과 ▶ \"{text_confirm}\"")
+        print(f"STT: 확인 응답 인식 결과 :  \"{text_confirm}\"")
         positive = ["네", "예", "응", "맞아", "오케이", "확인", "어", "그래"]
         negative = ["아니", "아니요", "틀려", "다시", "취소"]
         if any(p in text_confirm for p in positive): return True
@@ -138,11 +132,11 @@ def main():
         text_main = recognize_google_cloud(audio_main)
         if not text_main:
             log_and_speak("죄송합니다, 음성을 알아듣지 못했습니다. 다시 말씀해주세요."); continue
-        print(f"STT: 전체 음성 인식 결과 ▶ \"{text_main}\"")
+        print(f"STT: 전체 음성 인식 결과 \"{text_main}\"")
         bus_number_candidate = extract_bus_num(text_main)
         if not bus_number_candidate:
             log_and_speak("버스 번호를 찾지 못했습니다. 다시 말씀해주세요."); continue
-        print(f"STT: 버스번호 추출 ▶ {bus_number_candidate}")
+        print(f"STT: 버스번호 추출 {bus_number_candidate}")
         confirmation_message = f"{bus_number_candidate}번 버스, 맞으신가요?"
         log_and_speak(confirmation_message)
         confirmation_result = listen_for_confirmation()
@@ -153,12 +147,10 @@ def main():
             log_and_speak("알겠습니다. 버스 번호를 다시 말씀해주세요.")
         else:
             log_and_speak("죄송합니다. 답변을 제대로 듣지 못했습니다. 다시 말씀해주세요.")
-
+    
     if confirmed_bus_number:
         add_bus_number(confirmed_bus_number, 'bus_number.txt')
-        
         log_and_speak(f"{confirmed_bus_number} 번이 목록에 추가되었습니다.", log_prefix="[STT 최종 결과]")
-        
         print(f"CONFIRMED_BUS:{confirmed_bus_number}")
     else:
         log_and_speak("오류가 발생하여 버스 번호를 확인하지 못했습니다.", log_prefix="[STT 오류]")
@@ -173,3 +165,4 @@ if __name__ == "__main__":
         exit(1)
     
     main()
+

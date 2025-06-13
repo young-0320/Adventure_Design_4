@@ -1,5 +1,3 @@
-# fetch_and_speak.py
-
 import requests
 import os
 import sys
@@ -7,7 +5,7 @@ import sys
 try:
     from text_to_speech_rpi import speak
 except ImportError:
-    print("[오류] text_to_speech_rpi.py 파일을 찾을 수 없습니다.", file=sys.stderr)
+    print("text_to_speech_rpi.py 파일을 찾을 수 없습니다.", file=sys.stderr)
     def speak(text, **kwargs): pass
     sys.exit(1)
 
@@ -22,7 +20,6 @@ STA_ORDER   = "56"
 SERVICE_KEY = "fyVjph7SaBxYmvv2CF0Z%2B30SYBnR4MjVuWiH8sVdEtdYnj%2FbSb8KMK9WmxMnCMuNtBWgq2O%2B%2FLn21gZ2pSVDpw%3D%3D"
 
 def get_single_bus_info(bus_number):
-
     if bus_number not in BUS_ROUTE_IDS:
         return f"{bus_number}번 버스는 지원되지 않는 노선입니다."
 
@@ -44,7 +41,7 @@ def get_single_bus_info(bus_number):
         else:
             return f"{bus_number}번 버스의 실시간 도착 정보가 없습니다."
     except Exception as e:
-        print(f"[API] {bus_number}번 버스 정보 조회 실패: {e}", file=sys.stderr)
+        print(f"{bus_number}번 버스 정보 조회 실패: {e}", file=sys.stderr)
         return f"{bus_number}번 버스 정보를 가져오는 데 실패했습니다."
 
 def main():
@@ -71,17 +68,16 @@ def main():
             speak("버스 번호 파일을 읽는 데 실패했습니다.", speaker_keyword=USB_SPEAKER_KEYWORD)
             return
 
-
     all_info = []
     for bus in buses_to_check:
         info = get_single_bus_info(bus)
         all_info.append(info)
 
-
     if all_info:
         final_speech = " 그리고, ".join(all_info)
-        print(f"[최종 안내] {final_speech}")
+        print(f"{final_speech}")
         speak(final_speech, speaker_keyword=USB_SPEAKER_KEYWORD)
 
 if __name__ == '__main__':
     main()
+
